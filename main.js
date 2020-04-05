@@ -3,6 +3,8 @@ const context = canvas.getContext('2d')
 
 //variables auxiliares
 
+let interval
+
 const images = {
   flappyBackground: './images/flappy-bg.png',
   flappyLogo: './images/flappy-logo.png',
@@ -33,18 +35,44 @@ class Background {
   }
 }
 
+class Flappy {
+  constructor() {
+    this.x = 200
+    this.y = 200
+    this.width = 50
+    this.height = 50
+    this.flappy = new Image()
+    this.flappy.src = images.flappy
+  }
+
+  draw() {
+    this.y += 2
+    //background.draw()
+    context.drawImage(this.flappy, this.x, this.y, this.width, this.height)
+  }
+
+  fly() {
+    this.y -= 35
+  }
+}
+
 //instancias
 const background = new Background()
+const flappy = new Flappy()
 
 //funciones principales
 function update() {
   context.clearRect(0, 0, canvas.width, canvas.height)
-  startScreen()
+  //startScreen()
   //pressStartOrder()
   background.draw()
+  flappy.draw()
 }
 
-setInterval(update, 1000 / 60)
+function startGame() {
+  if (interval) return
+  interval = setInterval(update, 1000 / 60)
+}
 
 //funciones auxiliares
 function startScreen() {
@@ -67,3 +95,14 @@ function pressStartOrder() {
 }
 
 //listeners
+document.addEventListener('keydown', (e) => {
+  keycode = e.keyCode
+
+  console.log(keycode)
+  switch (keycode) {
+    case 13:
+      return startGame()
+    case 32:
+      return flappy.fly()
+  }
+})
