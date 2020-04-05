@@ -6,6 +6,7 @@ const context = canvas.getContext('2d')
 let interval
 const pipes = []
 let frames = 0
+let score = 0
 
 const images = {
   flappyBackground: './images/flappy-bg.png',
@@ -56,6 +57,15 @@ class Flappy {
   fly() {
     this.y -= 35
   }
+
+  isTouching(pipe) {
+    return (
+      this.x < pipe.x + pipe.width &&
+      this.x + this.width > pipe.x &&
+      this.y < pipe.y + pipe.height &&
+      this.y + this.height > pipe.y
+    )
+  }
 }
 
 class Pipe {
@@ -93,6 +103,8 @@ function update() {
   flappy.draw()
   generatePipes()
   drawPipes()
+  collisions()
+  drawScore()
 }
 
 function startGame() {
@@ -134,6 +146,21 @@ function generatePipes() {
 function drawPipes() {
   console.log(pipes)
   pipes.forEach((pipe) => pipe.draw())
+}
+
+function collisions() {
+  pipes.forEach((pipe) => {
+    if (flappy.isTouching(pipe) || flappy.y + flappy.height >= canvas.height)
+      return clearInterval(interval)
+  })
+}
+
+function drawScore() {
+  if (frames % 100 === 0) {
+    score++
+  }
+  context.fillStyle = 'white'
+  context.fillText(`Score: ${score}`, 30, 30)
 }
 
 //listeners
