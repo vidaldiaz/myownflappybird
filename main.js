@@ -4,12 +4,14 @@ const context = canvas.getContext('2d')
 //variables auxiliares
 
 let interval
+const pipes = []
+let frames = 0
 
 const images = {
   flappyBackground: './images/flappy-bg.png',
   flappyLogo: './images/flappy-logo.png',
-  flappyPipeBot: './images/flappy-pipe-bot.png',
-  flappyPipeTop: './images/flappy-pipe-top.png',
+  flappyBottomPipe: './images/flappy-pipe-bot.png',
+  flappyTopPipe: './images/flappy-pipe-top.png',
   flappy: './images/flappy.png',
 }
 
@@ -56,17 +58,41 @@ class Flappy {
   }
 }
 
+class Pipe {
+  constructor(height, y, direction) {
+    this.width = 70
+    this.height = height
+    this.x = canvas.width
+    this.y = y
+    this.topPipe = new Image()
+    this.topPipe.src = images.flappyTopPipe
+    this.bottomPipe = new Image()
+    this.bottomPipe.src = images.flappyBottomPipe
+    this.direction = direction
+  }
+  draw() {
+    this.x--
+    if (this.direction === 'top')
+      context.drawImage(this.topPipe, this.x, this.y, this.width, this.height)
+    else if (this.direction === 'bot')
+      context.drawImage(this.bottomPipe, this.x, this.y, this.width, this.height)
+  }
+}
+
 //instancias
 const background = new Background()
 const flappy = new Flappy()
 
 //funciones principales
 function update() {
+  frames++
   context.clearRect(0, 0, canvas.width, canvas.height)
   //startScreen()
   //pressStartOrder()
   background.draw()
   flappy.draw()
+  generatePipes()
+  drawPipes()
 }
 
 function startGame() {
@@ -92,6 +118,22 @@ function pressStartOrder() {
   context.fillStyle = 'white'
   context.font = '25px Tahoma'
   context.fillText('Press Enter to Start', 130, 300)
+}
+
+function generatePipes() {
+  const bottomHeight = Math.floor(Math.random() * (300 - 150) + 150)
+  const space = Math.floor(Math.random() * (140 - 120) + 120)
+  const topHeight = canvas.height - bottomHeight - space
+  console.log(bottomHeight)
+  if (frames % 200 === 0) {
+    pipes.push(new Pipe(bottomHeight, canvas.height - bottomHeight, 'bot'))
+    pipes.push(new Pipe(topHeight, 0, 'top'))
+  }
+}
+
+function drawPipes() {
+  console.log(pipes)
+  pipes.forEach((pipe) => pipe.draw())
 }
 
 //listeners
